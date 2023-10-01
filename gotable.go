@@ -3,13 +3,14 @@ package gotable
 import (
 	"encoding/csv"
 	"encoding/json"
-	"github.com/liushuochen/gotable/exception"
-	"github.com/liushuochen/gotable/table"
-	"github.com/liushuochen/gotable/util"
 	"io/ioutil"
 	"os"
 	"reflect"
 	"strings"
+
+	"github.com/liushuochen/gotable/exception"
+	"github.com/liushuochen/gotable/table"
+	"github.com/liushuochen/gotable/util"
 )
 
 const (
@@ -76,7 +77,7 @@ func CreateSafeTable(columns ...string) (*table.SafeTable, error) {
 // - If the length of columns is not greater than 0, an *exception.ColumnsLengthError error is returned.
 // - If columns contain duplicate values, an error is returned.
 // - Otherwise, the value of error is nil.
-func CreateByStruct(v interface{}) (*table.Table, error) {
+func CreateByStruct(v interface{}, tag string) (*table.Table, error) {
 	set := &table.Set{}
 	s := reflect.TypeOf(v).Elem()
 	numField := s.NumField()
@@ -86,7 +87,7 @@ func CreateByStruct(v interface{}) (*table.Table, error) {
 
 	for i := 0; i < numField; i++ {
 		field := s.Field(i)
-		name := field.Tag.Get("gotable")
+		name := strings.Split(field.Tag.Get(tag), ",")[0]
 		if name == "" {
 			name = field.Name
 		}
